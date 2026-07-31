@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ccs-defense-v2';
+const CACHE_NAME = 'ccs-football-v3';
 const ASSETS = [
   './',
   './index.html',
