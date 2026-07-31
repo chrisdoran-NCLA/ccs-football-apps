@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>CCS Defense Tracker</title>
+<title>CCS Football Tracker</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="CCS Defense">
+<meta name="apple-mobile-web-app-title" content="CCS Football">
 <meta name="theme-color" content="#101b30">
 <meta name="mobile-web-app-capable" content="yes">
 <style>
@@ -49,15 +49,6 @@
   .card h2{margin:0 0 10px; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:#6b6250; font-weight:800;}
   .row{display:flex; gap:8px; flex-wrap:wrap;}
 
-  /* Scoreboard chip */
-  .scoreboard{display:flex; gap:10px; align-items:stretch; margin-bottom:14px;}
-  .db-chip{flex:1; background:var(--navy); border-radius:14px; padding:12px 14px; color:var(--paper); border-bottom:3px solid var(--gold);}
-  .db-chip .label{font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--gold-light); opacity:.85; font-weight:700;}
-  .db-chip .value{font-family:var(--mono); font-weight:800; font-size:22px; margin-top:2px; letter-spacing:.02em;}
-  .qtr-chip{width:78px; background:var(--navy-2); border-radius:14px; padding:12px 8px; color:var(--paper); text-align:center; border-bottom:3px solid var(--gold);}
-  .qtr-chip .label{font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--gold-light); opacity:.85; font-weight:700;}
-  .qtr-chip .value{font-family:var(--mono); font-weight:800; font-size:20px;}
-
   button{cursor:pointer; font-family:var(--sans);}
   .btn{border:1.5px solid var(--line); background:#fff; color:var(--ink); border-radius:10px; padding:10px 12px; font-size:14px; font-weight:600; min-height:44px;}
   .btn.small{padding:7px 10px; font-size:12px; min-height:36px;}
@@ -74,14 +65,10 @@
 
   .chipgrid{display:flex; flex-wrap:wrap; gap:8px;}
   .chipgrid button{flex:0 0 auto;}
-  .step-summary{display:flex; flex-wrap:wrap; gap:6px; align-items:center; font-size:13px; color:#6b6250; margin-bottom:8px;}
-  .step-summary .tag{background:var(--paper-2); border-radius:8px; padding:4px 8px; font-weight:700; color:var(--navy); font-family:var(--mono); font-size:12px;}
-  .step-summary .tag.empty{opacity:.4; font-weight:400; font-family:var(--sans);}
 
   .call-preview{background:var(--navy); color:var(--gold-light); font-family:var(--mono); font-weight:700; font-size:15px; padding:12px 14px; border-radius:12px; margin-bottom:12px; min-height:20px; word-break:break-word;}
   .call-preview .default-note{color:rgba(228,199,138,.55); font-family:var(--sans); font-weight:400; font-size:11px; display:block; margin-top:3px;}
 
-  .custom-toggle{font-size:12px; color:#6b6250; text-decoration:underline; background:none; border:none; padding:4px 0;}
   input[type="text"], input[type="number"]{border:1.5px solid var(--line); border-radius:10px; padding:10px; font-size:14px; font-family:var(--sans); width:100%;}
 
   .result-tags{display:flex; flex-wrap:wrap; gap:8px;}
@@ -94,11 +81,9 @@
   .play-row .yards{font-family:var(--mono); font-weight:800; padding:3px 8px; border-radius:8px;}
   .yards.good{background:#e4f0e6; color:var(--good);}
   .yards.bad{background:#f5e2e0; color:var(--bad);}
-
-  table{width:100%; border-collapse:collapse; font-size:12px;}
-  th,td{text-align:left; padding:6px 6px; border-bottom:1px solid var(--line); white-space:nowrap;}
-  th{font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:#6b6250;}
-  .table-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch;}
+  .side-badge{font-family:var(--mono); font-size:9px; font-weight:800; padding:2px 6px; border-radius:6px; margin-right:6px; letter-spacing:.03em; display:inline-block;}
+  .side-badge.offense{background:#e4f0e6; color:var(--good);}
+  .side-badge.defense{background:#e2e8f5; color:var(--navy);}
 
   .bar-row{margin-bottom:10px;}
   .bar-row .bar-label{display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;}
@@ -109,7 +94,7 @@
   .bar-fill.low{background:var(--red);}
   .n-warn{font-size:10px; color:#b08a3e; margin-left:4px;}
 
-  select{border:1.5px solid var(--line); border-radius:10px; padding:9px; font-size:14px; width:100%; background:#fff;}
+  select{border:1.5px solid var(--line); border-radius:10px; padding:9px; font-size:13px; width:100%; background:#fff;}
   label.field-label{font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:#6b6250; font-weight:700; display:block; margin-bottom:5px;}
   .field{margin-bottom:12px;}
   .empty-state{text-align:center; padding:30px 10px; color:#8a8271;}
@@ -119,6 +104,7 @@
   .flash.show{opacity:1;}
   .backup-note{background:#fbf3e3; border:1px solid #e4c78a; border-radius:10px; padding:10px 12px; font-size:12.5px; color:#5a4a24; line-height:1.45;}
   .danger-zone{border:1px dashed var(--red); border-radius:10px; padding:10px 12px;}
+  .slot-box{min-width:112px;}
   hr.sep{border:none; border-top:1px solid var(--line); margin:12px 0;}
 </style>
 </head>
@@ -132,8 +118,8 @@
 <header>
   <div class="brand">
     <div>
-      <div class="brand-title">CCS Defense Tracker</div>
-      <div class="brand-sub">Pursue. Swarm. Hit.</div>
+      <div class="brand-title">CCS Football Tracker</div>
+      <div class="brand-sub">Pursue. Swarm. Hit. &middot; Attack. Attack. Attack.</div>
     </div>
     <div class="game-pill" id="activeGamePill">No game selected</div>
   </div>
@@ -152,7 +138,7 @@
 <div class="flash" id="flash"></div>
 
 <script>
-/* ===================== DATA / TAXONOMY ===================== */
+/* ===================== DEFENSE TAXONOMY ===================== */
 
 const PERSONNEL = [
   {id:'base8',  mode:'8',  label:'D-Base 41 Joker', formation:'4-2-2', roster:'E-H-LT-RT-M-J-LC-RC', family:'base',  isDefault:true},
@@ -185,13 +171,52 @@ const COVERAGE_GROUPS = [
   },
 ];
 
-const RESULT_TAGS = ['Sack','TFL','INT','Fumble Recovery','Forced Fumble','Pass Breakup','Penalty (Us)','Penalty (Them)','TD Allowed','QB Scramble'];
+const DEF_RESULT_TAGS = ['Sack','TFL','INT','Fumble Recovery','Forced Fumble','Pass Breakup','Penalty (Us)','Penalty (Them)','TD Allowed','QB Scramble'];
+
+/* ===================== OFFENSE TAXONOMY ===================== */
+
+const OFF_FORMATIONS = [
+  // 8-man
+  {label:'Pistol Rt.', mode:'8'}, {label:'Pistol Lt.', mode:'8'},
+  {label:'Wing Rt.', mode:'8'}, {label:'Wing Lt.', mode:'8'},
+  {label:'Boomer Rt.', mode:'8'}, {label:'Boomer Lt.', mode:'8'},
+  {label:'Trips Rt.', mode:'8'}, {label:'Trips Lt.', mode:'8'},
+  {label:'Trips Rt. Bunch', mode:'8'}, {label:'Trips Lt. Bunch', mode:'8'},
+  {label:'Power I Rt.', mode:'8'}, {label:'Power I Lt.', mode:'8'},
+  {label:'Quads', mode:'8'}, {label:'Quads Switch', mode:'8'},
+  {label:'Pro Set', mode:'8'}, {label:'Ace I / Split', mode:'8'},
+  {label:'Slot Left', mode:'8'}, {label:'Slot Right', mode:'8'},
+  // 11-man
+  {label:'Pistol Rt.', mode:'11'}, {label:'Pistol Lt.', mode:'11'},
+  {label:'Quads Rt.', mode:'11'}, {label:'Quads Lt.', mode:'11'},
+  {label:'Quads Z Back', mode:'11'}, {label:'Pro Rt. I (XY Wide)', mode:'11'},
+  {label:'Trips Rt.', mode:'11'}, {label:'Trips Lt.', mode:'11'},
+  {label:'Trips Rt. Bunch', mode:'11'}, {label:'Trips Lt. Bunch', mode:'11'},
+  {label:'Twins Rt.', mode:'11'}, {label:'Twins Lt.', mode:'11'},
+];
+
+const PERSONNEL_PACKAGES = ['Standard', "Wendy's", 'Cheetah'];
+const OFF_MOTIONS = ['None','X Motion','Y Motion','2 Motion','3 Motion','Crack','Weak','Strong','Orbit'];
+const RUN_NUMBERS = ['11','17','18','21','22','23','24','27','28','31','32','33','34','37','38'];
+const RUN_CONCEPTS = ['Direct','Counter','Trap','Jet','Draw','Bootleg','Option','Sweep'];
+const ROUTE_TREE = [
+  {n:'0', label:'Edelman'}, {n:'1', label:'Hitch'}, {n:'2', label:'Slant'},
+  {n:'3', label:'Sp.Out'}, {n:'4', label:'Curl'}, {n:'5', label:'D.Out'},
+  {n:'6', label:'Dig'}, {n:'7', label:'Corner'}, {n:'8', label:'Post'},
+  {n:'9', label:'Go'}, {n:'B', label:'Block'},
+];
+const ROUTE_TAGS = ['R','Wheel','Slugo','Idaho','Arrow','Return','McQueen','Bubble','Delay','Oklahoma'];
+const OFF_MODIFIERS = ['Tight','Wide','Change','Overload','Heavy','E'];
+const OFF_RESULT_TAGS = ['Sack Taken','TFL Taken','INT Thrown','Fumble Lost','TD Scored','Penalty (Us)','Penalty (Them)','Explosive Play','QB Scramble','2pt Conversion'];
 
 const DISTANCE_PRESETS = [1,2,3,5,7,10,15,20];
 
+function slotsForMode(mode){ return mode==='11' ? ['X','Y','2','3','Z'] : ['X','Y','2','3']; }
+function currentReceiverSlots(){ return slotsForMode(state.mode); }
+
 /* ===================== STATE ===================== */
 
-const STORAGE_KEY = 'ccsDefenseState_v1';
+const STORAGE_KEY = 'ccsDefenseState_v1'; // kept stable so existing on-device data isn't lost
 
 function defaultState(){
   return {
@@ -204,11 +229,22 @@ function defaultState(){
 }
 function emptyBuilder(){
   return {
+    side:'defense', // 'defense' | 'offense'
     down:1, distance:10, quarter:1, clock:'',
+    // defense fields
     personnelId:null, personnelCustom:'',
     front:null, frontCustom:'',
     blitz:'None', blitzCustom:'', shake:false,
     coverage:null, coverageCustom:'',
+    // offense fields
+    formation:null, formationCustom:'',
+    personnelPackage:'Standard',
+    motion:'None', motionCustom:'',
+    playType:'run', runNumber:'', runConcepts:[],
+    routes:{X:'',Y:'','2':'','3':'','Z':''},
+    modifiers:[], modifiersCustom:'',
+    fake:false, fakeText:'',
+    // shared result
     yards:0, tags:[], notes:'',
   };
 }
@@ -221,7 +257,10 @@ function loadState(){
     if(!raw) return defaultState();
     const parsed = JSON.parse(raw);
     const base = defaultState();
-    return Object.assign(base, parsed, {builder: Object.assign(emptyBuilder(), parsed.builder||{})});
+    const merged = Object.assign(base, parsed, {builder: Object.assign(emptyBuilder(), parsed.builder||{})});
+    // migrate plays saved before offense/defense side existed
+    merged.plays = (merged.plays||[]).map(p=> p.side ? p : Object.assign({}, p, {side:'defense'}));
+    return merged;
   }catch(e){
     console.error('Failed to load state, starting fresh.', e);
     return defaultState();
@@ -237,12 +276,11 @@ function saveState(){
 }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 
-/* ===================== SUCCESS MODEL ===================== */
-// Standard down-and-distance success convention, inverted for defense:
-// Offense is considered "successful" if it gains >=50% of needed yards on 1st,
-// >=70% on 2nd, or converts (>=100%) on 3rd/4th. Defensive success = the inverse,
-// with turnovers always counted as a defensive success and a TD allowed always a failure.
-function computeSuccess(down, distance, yards, tags){
+/* ===================== SUCCESS MODELS ===================== */
+// Standard down-and-distance success convention.
+// Defense: success = stop offense below the threshold (or force a turnover); TD allowed = failure.
+// Offense: success = meet/beat the threshold (or score); turnover thrown/lost = failure.
+function computeDefenseSuccess(down, distance, yards, tags){
   if(tags.includes('INT') || tags.includes('Fumble Recovery')) return true;
   if(tags.includes('TD Allowed')) return false;
   const dist = Math.max(distance,1);
@@ -252,14 +290,27 @@ function computeSuccess(down, distance, yards, tags){
   else offenseSuccess = yards >= dist;
   return !offenseSuccess;
 }
+function computeOffenseSuccess(down, distance, yards, tags){
+  if(tags.includes('INT Thrown') || tags.includes('Fumble Lost')) return false;
+  if(tags.includes('TD Scored')) return true;
+  const dist = Math.max(distance,1);
+  if(down===1) return yards >= 0.5*dist;
+  if(down===2) return yards >= 0.7*dist;
+  return yards >= dist;
+}
+function computeSuccess(b){
+  return b.side==='offense'
+    ? computeOffenseSuccess(b.down, b.distance, b.yards, b.tags)
+    : computeDefenseSuccess(b.down, b.distance, b.yards, b.tags);
+}
 
-/* ===================== CALL STRING ===================== */
+/* ===================== CALL STRINGS ===================== */
 function personnelById(id){ return PERSONNEL.find(p=>p.id===id); }
 function frontFamilyFor(personnelId){
   const p = personnelById(personnelId);
   return p ? p.family : 'other';
 }
-function buildCallString(b){
+function buildDefenseCallString(b){
   const p = personnelById(b.personnelId);
   const personnelLabel = b.personnelId==='__custom' ? b.personnelCustom : (p? p.label : '');
   const isDefaultPersonnel = p && p.isDefault;
@@ -272,6 +323,30 @@ function buildCallString(b){
   const rest = [blitzPart, covLabel].filter(Boolean);
   if(rest.length) str += (str? ', ':'') + rest.join(', ');
   return str || '(building call…)';
+}
+function buildOffenseCallString(b){
+  const parts = [];
+  const formationLabel = b.formation==='__custom' ? b.formationCustom : b.formation;
+  if(formationLabel) parts.push(formationLabel);
+  if(b.personnelPackage && b.personnelPackage!=='Standard') parts.push(b.personnelPackage);
+  const modLabels = (b.modifiers||[]).slice();
+  if(b.modifiersCustom && b.modifiersCustom.trim()) modLabels.push(b.modifiersCustom.trim());
+  if(modLabels.length) parts.push(modLabels.join(' '));
+  const motionLabel = b.motion==='__custom' ? b.motionCustom : b.motion;
+  if(motionLabel && motionLabel!=='None') parts.push(motionLabel);
+  if(b.fake && b.fakeText && b.fakeText.trim()) parts.push('Fake '+b.fakeText.trim());
+  let playCode = '';
+  if(b.playType==='run'){
+    playCode = (b.runNumber||'').trim();
+    if(b.runConcepts && b.runConcepts.length) playCode += (playCode? ' ':'') + b.runConcepts.join(' ');
+  } else {
+    playCode = currentReceiverSlots().map(s=>b.routes[s]||'').join('');
+  }
+  if(playCode) parts.push(playCode);
+  return parts.join(' ') || '(building call…)';
+}
+function buildCallString(b){
+  return b.side==='offense' ? buildOffenseCallString(b) : buildDefenseCallString(b);
 }
 
 /* ===================== NAV / RENDER ===================== */
@@ -327,11 +402,27 @@ function renderLog(){
     return;
   }
 
-  const pFamily = frontFamilyFor(b.personnelId);
-  const frontOptions = FRONTS[pFamily] || FRONTS.other;
-  const blitzOptions = BLITZ[state.mode];
+  let html = sideToggleCardHtml(b) + situationCardHtml(b) + callPreviewCardHtml(b);
+  html += b.side==='offense' ? offenseBuilderHtml(b) : defenseBuilderHtml(b);
+  html += resultCardHtml(b);
+  html += saveBarHtml(b);
+  mainEl.innerHTML = html;
+}
 
-  mainEl.innerHTML = `
+function sideToggleCardHtml(b){
+  return `
+    <div class="card">
+      <h2>Side of Ball</h2>
+      <div class="chipgrid">
+        <button class="btn ${b.side==='defense'?'selected':''}" onclick="setSide('defense')">Defense</button>
+        <button class="btn ${b.side==='offense'?'selected':''}" onclick="setSide('offense')">Offense</button>
+      </div>
+    </div>
+  `;
+}
+
+function situationCardHtml(b){
+  return `
     <div class="card">
       <h2>Situation</h2>
       <div class="row" style="margin-bottom:10px;">
@@ -359,7 +450,7 @@ function renderLog(){
         <div style="flex:1;">
           <label class="field-label">Quarter</label>
           <div class="chipgrid">
-            ${[1,2,3,4,'OT'].map(q=>`<button class="btn small ${String(b.quarter)===String(q)?'selected':''}" onclick="setQuarter('${q}')">${q===  'OT'?'OT':'Q'+q}</button>`).join('')}
+            ${[1,2,3,4,'OT'].map(q=>`<button class="btn small ${String(b.quarter)===String(q)?'selected':''}" onclick="setQuarter(${jsAttr(String(q))})">${q==='OT'?'OT':'Q'+q}</button>`).join('')}
           </div>
         </div>
         <div style="width:110px;">
@@ -368,17 +459,35 @@ function renderLog(){
         </div>
       </div>
     </div>
+  `;
+}
 
-    <div class="call-preview">
-      ${escapeHtml(buildCallString(b))}
-      <span class="default-note">Personnel omitted above = default (${PERSONNEL.find(p=>p.mode===state.mode&&p.isDefault).label})</span>
-    </div>
+function callPreviewInnerHtml(b){
+  const note = b.side==='defense'
+    ? `<span class="default-note">Personnel omitted above = default (${PERSONNEL.find(p=>p.mode===state.mode&&p.isDefault).label})</span>`
+    : '';
+  return escapeHtml(buildCallString(b)) + note;
+}
+function callPreviewCardHtml(b){
+  return `<div class="call-preview">${callPreviewInnerHtml(b)}</div>`;
+}
+function renderPreviewOnly(){
+  const preview = document.querySelector('.call-preview');
+  if(preview) preview.innerHTML = callPreviewInnerHtml(state.builder);
+}
 
+/* ---- Defense builder ---- */
+function defenseBuilderHtml(b){
+  const pFamily = frontFamilyFor(b.personnelId);
+  const frontOptions = FRONTS[pFamily] || FRONTS.other;
+  const blitzOptions = BLITZ[state.mode];
+
+  return `
     <div class="card">
       <h2>1 · Personnel</h2>
       <div class="chipgrid">
         ${PERSONNEL.filter(p=>p.mode===state.mode).map(p=>`
-          <button class="btn small ${b.personnelId===p.id?'selected':''}" onclick="setPersonnel('${p.id}')">${p.label}<br><span style="font-weight:400; font-size:10px; opacity:.7;">${p.formation}</span></button>
+          <button class="btn small ${b.personnelId===p.id?'selected':''}" onclick="setPersonnel(${jsAttr(p.id)})">${p.label}<br><span style="font-weight:400; font-size:10px; opacity:.7;">${p.formation}</span></button>
         `).join('')}
         <button class="btn small ${b.personnelId==='__custom'?'selected':''}" onclick="setPersonnel('__custom')">Other…</button>
       </div>
@@ -388,7 +497,7 @@ function renderLog(){
     <div class="card">
       <h2>2 · Front / DL Call</h2>
       <div class="chipgrid">
-        ${frontOptions.map(f=>`<button class="btn small ${b.front===f?'selected':''}" onclick='setFront(${JSON.stringify(f)})'>${f}</button>`).join('')}
+        ${frontOptions.map(f=>`<button class="btn small ${b.front===f?'selected':''}" onclick="setFront(${jsAttr(f)})">${f}</button>`).join('')}
         <button class="btn small ${b.front==='__custom'?'selected':''}" onclick="setFront('__custom')">Other…</button>
       </div>
       ${b.front==='__custom' ? `<input style="margin-top:8px;" type="text" placeholder="Custom front/call" value="${escapeHtml(b.frontCustom)}" oninput="state.builder.frontCustom=this.value; saveState(); renderPreviewOnly();">` : ''}
@@ -397,7 +506,7 @@ function renderLog(){
     <div class="card">
       <h2>3 · Blitz</h2>
       <div class="chipgrid">
-        ${blitzOptions.map(bl=>`<button class="btn small ${b.blitz===bl?'selected':''}" onclick='setBlitz(${JSON.stringify(bl)})'>${bl}</button>`).join('')}
+        ${blitzOptions.map(bl=>`<button class="btn small ${b.blitz===bl?'selected':''}" onclick="setBlitz(${jsAttr(bl)})">${bl}</button>`).join('')}
         <button class="btn small ${b.blitz==='__custom'?'selected':''}" onclick="setBlitz('__custom')">Other…</button>
       </div>
       ${b.blitz==='__custom' ? `<input style="margin-top:8px;" type="text" placeholder="Custom blitz" value="${escapeHtml(b.blitzCustom)}" oninput="state.builder.blitzCustom=this.value; saveState(); renderPreviewOnly();">` : ''}
@@ -410,17 +519,104 @@ function renderLog(){
         <div style="margin-bottom:8px;">
           <div style="font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:#8a8271; margin-bottom:5px;">${grp.label}</div>
           <div class="chipgrid">
-            ${grp.items.map(c=>`<button class="btn small ${b.coverage===c?'selected':''}" onclick='setCoverage(${JSON.stringify(c)})'>${c}</button>`).join('')}
+            ${grp.items.map(c=>`<button class="btn small ${b.coverage===c?'selected':''}" onclick="setCoverage(${jsAttr(c)})">${c}</button>`).join('')}
           </div>
         </div>
       `).join('')}
       <button class="btn small ${b.coverage==='__custom'?'selected':''}" onclick="setCoverage('__custom')">Other…</button>
       ${b.coverage==='__custom' ? `<input style="margin-top:8px;" type="text" placeholder="Custom coverage" value="${escapeHtml(b.coverageCustom)}" oninput="state.builder.coverageCustom=this.value; saveState(); renderPreviewOnly();">` : ''}
     </div>
+  `;
+}
+
+/* ---- Offense builder ---- */
+function offenseBuilderHtml(b){
+  return `
+    <div class="card">
+      <h2>1 · Formation</h2>
+      <div class="chipgrid">
+        ${OFF_FORMATIONS.filter(f=>f.mode===state.mode).map(f=>`<button class="btn small ${b.formation===f.label?'selected':''}" onclick="setFormation(${jsAttr(f.label)})">${f.label}</button>`).join('')}
+        <button class="btn small ${b.formation==='__custom'?'selected':''}" onclick="setFormation('__custom')">Other…</button>
+      </div>
+      ${b.formation==='__custom' ? `<input style="margin-top:8px;" type="text" placeholder="Custom formation" value="${escapeHtml(b.formationCustom)}" oninput="state.builder.formationCustom=this.value; saveState(); renderPreviewOnly();">` : ''}
+      <div style="margin-top:10px;">
+        <label class="field-label">Personnel Package (optional)</label>
+        <div class="chipgrid">
+          ${PERSONNEL_PACKAGES.map(p=>`<button class="btn small ${b.personnelPackage===p?'selected':''}" onclick="setPersonnelPackage(${jsAttr(p)})">${p}</button>`).join('')}
+        </div>
+      </div>
+    </div>
 
     <div class="card">
+      <h2>2 · Motion</h2>
+      <div class="chipgrid">
+        ${OFF_MOTIONS.map(m=>`<button class="btn small ${b.motion===m?'selected':''}" onclick="setMotion(${jsAttr(m)})">${m}</button>`).join('')}
+        <button class="btn small ${b.motion==='__custom'?'selected':''}" onclick="setMotion('__custom')">Other…</button>
+      </div>
+      ${b.motion==='__custom' ? `<input style="margin-top:8px;" type="text" placeholder="Custom motion" value="${escapeHtml(b.motionCustom)}" oninput="state.builder.motionCustom=this.value; saveState(); renderPreviewOnly();">` : ''}
+    </div>
+
+    <div class="card">
+      <h2>3 · Play Call</h2>
+      <div class="chipgrid" style="margin-bottom:10px;">
+        <button class="btn small ${b.playType==='run'?'selected':''}" onclick="setPlayType('run')">Run</button>
+        <button class="btn small ${b.playType==='pass'?'selected':''}" onclick="setPlayType('pass')">Pass</button>
+      </div>
+      ${b.playType==='run' ? runCallHtml(b) : passCallHtml(b)}
+      <div style="margin-top:12px;">
+        <label style="display:flex; align-items:center; gap:6px; font-size:13px;"><input type="checkbox" ${b.fake?'checked':''} onchange="setFake(this.checked)"> Fake / play-action</label>
+        ${b.fake? `<input style="margin-top:6px;" type="text" placeholder="e.g. 18, or X Bubble" value="${escapeHtml(b.fakeText)}" oninput="state.builder.fakeText=this.value; saveState(); renderPreviewOnly();">` : ''}
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>4 · Modifiers</h2>
+      <div class="chipgrid">
+        ${OFF_MODIFIERS.map(m=>`<button class="btn small ${(b.modifiers||[]).includes(m)?'selected':''}" onclick="toggleModifier(${jsAttr(m)})">${m}</button>`).join('')}
+      </div>
+      <input style="margin-top:8px;" type="text" placeholder="Other modifier / line call (optional)" value="${escapeHtml(b.modifiersCustom)}" oninput="state.builder.modifiersCustom=this.value; saveState(); renderPreviewOnly();">
+    </div>
+  `;
+}
+function runCallHtml(b){
+  return `
+    <label class="field-label">Run Number</label>
+    <div class="chipgrid" style="margin-bottom:8px;">
+      ${RUN_NUMBERS.map(n=>`<button class="btn small ${b.runNumber===n?'selected':''}" onclick="setRunNumber(${jsAttr(n)})">${n}</button>`).join('')}
+    </div>
+    <input type="text" placeholder="Custom run number" value="${escapeHtml(b.runNumber)}" oninput="state.builder.runNumber=this.value; saveState(); renderPreviewOnly();">
+    <label class="field-label" style="margin-top:10px;">Concept (optional)</label>
+    <div class="chipgrid">
+      ${RUN_CONCEPTS.map(c=>`<button class="btn small ${(b.runConcepts||[]).includes(c)?'selected':''}" onclick="toggleRunConcept(${jsAttr(c)})">${c}</button>`).join('')}
+    </div>
+  `;
+}
+function passCallHtml(b){
+  return `
+    <div class="row">
+      ${currentReceiverSlots().map(slot=>`
+        <div class="slot-box">
+          <label class="field-label">${slot}</label>
+          <div class="chipgrid">
+            ${ROUTE_TREE.map(r=>`<button class="btn small ${b.routes[slot]===r.n?'selected':''}" onclick="setRoute(${jsAttr(slot)},${jsAttr(r.n)})">${r.n}<br><span style="font-weight:400; font-size:9px; opacity:.7;">${r.label}</span></button>`).join('')}
+          </div>
+          <select style="margin-top:6px;" onchange="setRouteTag(${jsAttr(slot)}, this.value)">
+            <option value="">Tag route…</option>
+            ${ROUTE_TAGS.map(t=>`<option value="${t}" ${b.routes[slot]===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+/* ---- Result card (shared, side-aware tags) ---- */
+function resultCardHtml(b){
+  const tagList = b.side==='offense' ? OFF_RESULT_TAGS : DEF_RESULT_TAGS;
+  return `
+    <div class="card">
       <h2>Result</h2>
-      <label class="field-label">Yards gained by offense</label>
+      <label class="field-label">Yards gained ${b.side==='offense'?'(by us)':'(by offense)'}</label>
       <div class="row" style="margin-bottom:10px;">
         <div class="chipgrid">
           ${[-5,-3,-1,0,2,4,6,10,15,20].map(y=>`<button class="btn small ${b.yards===y?'selected':''}" onclick="setYards(${y})">${y>0?'+':''}${y}</button>`).join('')}
@@ -433,14 +629,17 @@ function renderLog(){
       </div>
       <label class="field-label">Tags</label>
       <div class="result-tags">
-        ${RESULT_TAGS.map(t=>`<button class="btn small ${b.tags.includes(t)?'selected':''}" onclick="toggleTag('${t}')">${t}</button>`).join('')}
+        ${tagList.map(t=>`<button class="btn small ${b.tags.includes(t)?'selected':''}" onclick="toggleTag(${jsAttr(t)})">${t}</button>`).join('')}
       </div>
       <div class="field" style="margin-top:12px;">
         <label class="field-label">Notes (optional)</label>
         <input type="text" placeholder="e.g. slot receiver beat coverage" value="${escapeHtml(b.notes)}" oninput="state.builder.notes=this.value; saveState();">
       </div>
     </div>
-
+  `;
+}
+function saveBarHtml(b){
+  return `
     <div class="save-bar">
       <div class="row" style="align-items:center;">
         <button class="btn ghost" onclick="repeatLastCall()">Repeat last call</button>
@@ -452,13 +651,13 @@ function renderLog(){
   `;
 }
 
-function renderPreviewOnly(){
-  const preview = document.querySelector('.call-preview');
-  if(preview) preview.innerHTML = escapeHtml(buildCallString(state.builder)) +
-    `<span class="default-note">Personnel omitted above = default (${PERSONNEL.find(p=>p.mode===state.mode&&p.isDefault).label})</span>`;
-}
-
 function canSave(b){
+  if(b.side==='offense'){
+    const hasFormation = b.formation==='__custom' ? !!b.formationCustom.trim() : !!b.formation;
+    if(!hasFormation) return false;
+    if(b.playType==='run') return !!(b.runNumber && b.runNumber.trim());
+    return currentReceiverSlots().some(s=>b.routes[s]);
+  }
   const hasPersonnel = b.personnelId==='__custom' ? !!b.personnelCustom.trim() : !!b.personnelId;
   const hasFront = b.front==='__custom' ? !!b.frontCustom.trim() : !!b.front;
   const hasCoverage = b.coverage==='__custom' ? !!b.coverageCustom.trim() : !!b.coverage;
@@ -473,22 +672,13 @@ function switchTab(t){
   render();
 }
 
-/* ---- builder setters ---- */
+/* ---- builder setters: shared ---- */
+function setSide(s){ state.builder.side=s; saveState(); render(); }
 function setDown(d){ state.builder.down=d; saveState(); render(); }
 function setDistance(d){ state.builder.distance=d; saveState(); render(); }
 function nudgeDistance(delta){ state.builder.distance = Math.max(1, state.builder.distance+delta); saveState(); render(); }
 function setQuarter(q){ state.builder.quarter=q; saveState(); render(); }
 function setClock(v){ state.builder.clock=v; saveState(); }
-function setPersonnel(id){
-  state.builder.personnelId=id;
-  // reset front if it no longer matches the new personnel family
-  state.builder.front=null; state.builder.frontCustom='';
-  saveState(); render();
-}
-function setFront(f){ state.builder.front=f; saveState(); render(); }
-function setBlitz(bl){ state.builder.blitz=bl; saveState(); render(); }
-function setShake(v){ state.builder.shake=v; saveState(); render(); }
-function setCoverage(c){ state.builder.coverage=c; saveState(); render(); }
 function setYards(y){ state.builder.yards=y; saveState(); render(); }
 function nudgeYards(delta){ state.builder.yards += delta; saveState(); render(); }
 function toggleTag(t){
@@ -497,20 +687,70 @@ function toggleTag(t){
   saveState(); render();
 }
 function resetBuilder(){
-  const keep = {down:state.builder.down, distance:10, quarter:state.builder.quarter, clock:state.builder.clock};
+  const keep = {side:state.builder.side, down:state.builder.down, distance:10, quarter:state.builder.quarter, clock:state.builder.clock};
   state.builder = Object.assign(emptyBuilder(), keep);
   saveState(); render();
 }
+
+/* ---- builder setters: defense ---- */
+function setPersonnel(id){
+  state.builder.personnelId=id;
+  state.builder.front=null; state.builder.frontCustom='';
+  saveState(); render();
+}
+function setFront(f){ state.builder.front=f; saveState(); render(); }
+function setBlitz(bl){ state.builder.blitz=bl; saveState(); render(); }
+function setShake(v){ state.builder.shake=v; saveState(); render(); }
+function setCoverage(c){ state.builder.coverage=c; saveState(); render(); }
+
+/* ---- builder setters: offense ---- */
+function setFormation(f){ state.builder.formation=f; saveState(); render(); }
+function setPersonnelPackage(p){ state.builder.personnelPackage=p; saveState(); render(); }
+function setMotion(m){ state.builder.motion=m; saveState(); render(); }
+function setPlayType(t){ state.builder.playType=t; saveState(); render(); }
+function setRunNumber(n){ state.builder.runNumber=n; saveState(); render(); }
+function toggleRunConcept(c){
+  const i = state.builder.runConcepts.indexOf(c);
+  if(i>=0) state.builder.runConcepts.splice(i,1); else state.builder.runConcepts.push(c);
+  saveState(); render();
+}
+function setRoute(slot, val){
+  state.builder.routes[slot] = (state.builder.routes[slot]===val) ? '' : val;
+  saveState(); render();
+}
+function setRouteTag(slot, val){
+  state.builder.routes[slot] = val || '';
+  saveState(); render();
+}
+function toggleModifier(m){
+  const i = state.builder.modifiers.indexOf(m);
+  if(i>=0) state.builder.modifiers.splice(i,1); else state.builder.modifiers.push(m);
+  saveState(); render();
+}
+function setFake(v){ state.builder.fake=v; saveState(); render(); }
+
 function repeatLastCall(){
   const last = state.plays.filter(p=>p.gameId===state.activeGameId).slice(-1)[0];
   if(!last){ showFlash('No previous play to repeat'); return; }
-  state.builder = Object.assign(emptyBuilder(), {
-    down:state.builder.down, distance:state.builder.distance, quarter:state.builder.quarter, clock:state.builder.clock,
-    personnelId:last.personnelId, personnelCustom:last.personnelCustom||'',
-    front:last.front, frontCustom:last.frontCustom||'',
-    blitz:last.blitz, blitzCustom:last.blitzCustom||'', shake:last.shake,
-    coverage:last.coverage, coverageCustom:last.coverageCustom||'',
-  });
+  const common = {down:state.builder.down, distance:state.builder.distance, quarter:state.builder.quarter, clock:state.builder.clock, side:last.side};
+  if(last.side==='offense'){
+    state.builder = Object.assign(emptyBuilder(), common, {
+      formation:last.formation, formationCustom:last.formationCustom||'',
+      personnelPackage:last.personnelPackage||'Standard',
+      motion:last.motion, motionCustom:last.motionCustom||'',
+      playType:last.playType||'run', runNumber:last.runNumber||'', runConcepts:(last.runConcepts||[]).slice(),
+      routes:Object.assign({X:'',Y:'','2':'','3':'','Z':''}, last.routes||{}),
+      modifiers:(last.modifiers||[]).slice(), modifiersCustom:last.modifiersCustom||'',
+      fake:last.fake||false, fakeText:last.fakeText||'',
+    });
+  } else {
+    state.builder = Object.assign(emptyBuilder(), common, {
+      personnelId:last.personnelId, personnelCustom:last.personnelCustom||'',
+      front:last.front, frontCustom:last.frontCustom||'',
+      blitz:last.blitz, blitzCustom:last.blitzCustom||'', shake:last.shake,
+      coverage:last.coverage, coverageCustom:last.coverageCustom||'',
+    });
+  }
   saveState(); render();
   showFlash('Loaded last call — set result after the snap');
 }
@@ -519,20 +759,22 @@ function savePlay(){
   const b = state.builder;
   if(!canSave(b)) return;
   const callString = buildCallString(b);
-  const success = computeSuccess(b.down, b.distance, b.yards, b.tags);
+  const success = computeSuccess(b);
   const play = {
-    id: uid(),
-    gameId: state.activeGameId,
-    ts: Date.now(),
-    quarter: b.quarter, clock: b.clock,
-    down: b.down, distance: b.distance,
+    id: uid(), gameId: state.activeGameId, ts: Date.now(), side: b.side,
+    quarter: b.quarter, clock: b.clock, down: b.down, distance: b.distance,
     personnelId: b.personnelId, personnelCustom: b.personnelCustom,
     front: b.front, frontCustom: b.frontCustom,
     blitz: b.blitz, blitzCustom: b.blitzCustom, shake: b.shake,
     coverage: b.coverage, coverageCustom: b.coverageCustom,
-    callString,
-    yards: b.yards, tags: b.tags.slice(), notes: b.notes,
-    success,
+    formation: b.formation, formationCustom: b.formationCustom,
+    personnelPackage: b.personnelPackage,
+    motion: b.motion, motionCustom: b.motionCustom,
+    playType: b.playType, runNumber: b.runNumber, runConcepts: (b.runConcepts||[]).slice(),
+    routes: Object.assign({}, b.routes),
+    modifiers: (b.modifiers||[]).slice(), modifiersCustom: b.modifiersCustom,
+    fake: b.fake, fakeText: b.fakeText,
+    callString, yards: b.yards, tags: b.tags.slice(), notes: b.notes, success,
     mode: state.mode,
   };
   state.plays.push(play);
@@ -545,19 +787,34 @@ function savePlay(){
 /* ===================== PLAY LOG TAB ===================== */
 function renderList(){
   const g = activeGame();
-  const plays = state.plays.filter(p=>!g || p.gameId===state.activeGameId).slice().reverse();
+  const sideFilter = window.__listSideFilter || 'all';
+  let plays = state.plays.filter(p=>!g || p.gameId===state.activeGameId);
+  if(sideFilter!=='all') plays = plays.filter(p=>p.side===sideFilter);
+  plays = plays.slice().reverse();
+
+  const filterCard = `
+    <div class="card">
+      <h2>Filter</h2>
+      <div class="chipgrid">
+        <button class="btn small ${sideFilter==='all'?'selected':''}" onclick="setListSideFilter('all')">All</button>
+        <button class="btn small ${sideFilter==='offense'?'selected':''}" onclick="setListSideFilter('offense')">Offense</button>
+        <button class="btn small ${sideFilter==='defense'?'selected':''}" onclick="setListSideFilter('defense')">Defense</button>
+      </div>
+    </div>
+  `;
+
   if(plays.length===0){
-    mainEl.innerHTML = `<div class="card empty-state"><div class="big">No plays logged yet</div><p>Plays you save on the Log Play tab will show up here.</p></div>`;
+    mainEl.innerHTML = filterCard + `<div class="card empty-state"><div class="big">No plays logged yet</div><p>Plays you save on the Log Play tab will show up here.</p></div>`;
     return;
   }
-  mainEl.innerHTML = `
+  mainEl.innerHTML = filterCard + `
     <div class="card">
       <h2>${g? 'vs '+g.opponent : 'All Games'} — ${plays.length} play${plays.length===1?'':'s'}</h2>
       <div class="recent-list">
         ${plays.map(p=>`
           <div class="play-row">
             <div>
-              <div class="call">${escapeHtml(p.callString)}</div>
+              <div class="call"><span class="side-badge ${p.side}">${p.side==='offense'?'OFF':'DEF'}</span>${escapeHtml(p.callString)}</div>
               <div class="meta">${ordinal(p.down)} &amp; ${p.distance} · Q${p.quarter}${p.clock? ' · '+escapeHtml(p.clock):''}${p.tags.length? ' · '+p.tags.join(', '):''}</div>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
@@ -570,6 +827,7 @@ function renderList(){
     </div>
   `;
 }
+function setListSideFilter(f){ window.__listSideFilter=f; render(); }
 function deletePlay(id){
   if(!confirm('Delete this play?')) return;
   state.plays = state.plays.filter(p=>p.id!==id);
@@ -578,40 +836,64 @@ function deletePlay(id){
 
 /* ===================== TRENDS TAB ===================== */
 function renderTrends(){
-  const g = activeGame();
+  const scope = window.__trendScope || 'game';
+  const side = window.__trendSide || 'defense';
   mainEl.innerHTML = `
     <div class="card">
       <h2>Scope</h2>
       <div class="chipgrid">
-        <button class="btn small ${window.__trendScope!=='all'?'selected':''}" onclick="setTrendScope('game')">This Game</button>
-        <button class="btn small ${window.__trendScope==='all'?'selected':''}" onclick="setTrendScope('all')">All Games</button>
+        <button class="btn small ${scope!=='all'?'selected':''}" onclick="setTrendScope('game')">This Game</button>
+        <button class="btn small ${scope==='all'?'selected':''}" onclick="setTrendScope('all')">All Games</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Side</h2>
+      <div class="chipgrid">
+        <button class="btn small ${side==='defense'?'selected':''}" onclick="setTrendSide('defense')">Defense</button>
+        <button class="btn small ${side==='offense'?'selected':''}" onclick="setTrendSide('offense')">Offense</button>
+        <button class="btn small ${side==='both'?'selected':''}" onclick="setTrendSide('both')">Both</button>
       </div>
     </div>
     <div id="trendsBody"></div>
   `;
-  const scope = window.__trendScope || 'game';
-  const plays = scope==='all' ? state.plays : state.plays.filter(p=>p.gameId===state.activeGameId);
+  const basePlays = scope==='all' ? state.plays : state.plays.filter(p=>p.gameId===state.activeGameId);
   const body = document.getElementById('trendsBody');
+  let html = '';
+  if(side==='offense' || side==='both') html += trendsSectionHtml('Offense', basePlays.filter(p=>p.side==='offense'), 'offense');
+  if(side==='defense' || side==='both') html += trendsSectionHtml('Defense', basePlays.filter(p=>p.side==='defense'), 'defense');
+  body.innerHTML = html || `<div class="card empty-state"><div class="big">Not enough data yet</div><p>Log a few plays to see trends here.</p></div>`;
+}
+function setTrendScope(s){ window.__trendScope = s; render(); }
+function setTrendSide(s){ window.__trendSide = s; render(); }
+
+function trendsSectionHtml(title, plays, side){
   if(plays.length===0){
-    body.innerHTML = `<div class="card empty-state"><div class="big">Not enough data yet</div><p>Log a few plays to see trends here.</p></div>`;
-    return;
+    return `<div class="card"><h2>${title}</h2><div style="font-size:13px; color:#6b6250;">No ${title.toLowerCase()} plays logged yet in this scope.</div></div>`;
   }
   const overall = successRate(plays);
-  body.innerHTML = `
+  let groups = '';
+  if(side==='defense'){
+    groups += groupCard('By Down', groupBy(plays, p=>ordinal(p.down)));
+    groups += groupCard('By Personnel', groupBy(plays, p=>p.personnelId==='__custom'?p.personnelCustom:(personnelById(p.personnelId)?.label||'—')));
+    groups += groupCard('By Front / Call', groupBy(plays, p=>p.front==='__custom'?p.frontCustom:p.front));
+    groups += groupCard('By Blitz', groupBy(plays, p=>(p.blitz==='__custom'?p.blitzCustom:p.blitz)||'None'));
+    groups += groupCard('By Coverage', groupBy(plays, p=>p.coverage==='__custom'?p.coverageCustom:p.coverage));
+  } else {
+    groups += groupCard('By Down', groupBy(plays, p=>ordinal(p.down)));
+    groups += groupCard('By Formation', groupBy(plays, p=>p.formation==='__custom'?p.formationCustom:p.formation));
+    groups += groupCard('By Play Type', groupBy(plays, p=>p.playType==='run'?'Run':'Pass'));
+    groups += groupCard('By Motion', groupBy(plays, p=>(p.motion==='__custom'?p.motionCustom:p.motion)||'None'));
+  }
+  return `
     <div class="card">
-      <h2>Overall</h2>
-      ${barRow('Defensive success rate', overall.rate, overall.n)}
-      <div style="font-size:12px; color:#6b6250; margin-top:4px;">Success = stop offense below down-and-distance threshold, or force a turnover. Based on ${overall.n} play${overall.n===1?'':'s'}.</div>
+      <h2>${title} Overall</h2>
+      ${barRow((side==='offense'?'Offensive':'Defensive')+' success rate', overall.rate, overall.n)}
+      <div style="font-size:12px; color:#6b6250; margin-top:4px;">Based on ${overall.n} play${overall.n===1?'':'s'}.</div>
     </div>
-    ${groupCard('By Down', groupBy(plays, p=>ordinal(p.down)))}
-    ${groupCard('By Personnel', groupBy(plays, p=>p.personnelId==='__custom'?p.personnelCustom:(personnelById(p.personnelId)?.label||'—')))}
-    ${groupCard('By Front / Call', groupBy(plays, p=>p.front==='__custom'?p.frontCustom:p.front))}
-    ${groupCard('By Blitz', groupBy(plays, p=>(p.blitz==='__custom'?p.blitzCustom:p.blitz)||'None'))}
-    ${groupCard('By Coverage', groupBy(plays, p=>p.coverage==='__custom'?p.coverageCustom:p.coverage))}
+    ${groups}
     ${topCallsCard(plays)}
   `;
 }
-function setTrendScope(s){ window.__trendScope = s; render(); }
 function successRate(plays){
   const n = plays.length;
   const s = plays.filter(p=>p.success).length;
@@ -673,7 +955,7 @@ function renderGames(){
         <button class="btn small ${state.mode==='8'?'selected':''}" onclick="setMode('8')">8-Man</button>
         <button class="btn small ${state.mode==='11'?'selected':''}" onclick="setMode('11')">11-Man</button>
       </div>
-      <div style="font-size:12px; color:#6b6250; margin-top:8px;">Changes which personnel groups / blitz calls show up on the Log Play tab.</div>
+      <div style="font-size:12px; color:#6b6250; margin-top:8px;">Changes which personnel/formations, blitz calls, and receiver slots (adds Z) show up on the Log Play tab.</div>
     </div>
 
     <div class="card">
@@ -713,6 +995,7 @@ function renderGames(){
 function setMode(m){
   state.mode = m;
   state.builder.personnelId = null; state.builder.front=null; state.builder.blitz='None';
+  state.builder.formation = null;
   saveState(); render();
 }
 function createGame(){
@@ -739,11 +1022,11 @@ function renderData(){
   mainEl.innerHTML = `
     <div class="card">
       <h2>Backup Reminder</h2>
-      <div class="backup-note">Data lives only on this iPad's browser storage. Export a CSV after every game and save it to Files / iCloud / email — don't rely on the app alone for long-term storage.</div>
+      <div class="backup-note">Data lives only on this device's browser storage. Export a CSV after every game and save it to Files / iCloud / email — don't rely on the app alone for long-term storage.</div>
     </div>
     <div class="card">
       <h2>Export</h2>
-      <p style="font-size:13px; color:#6b6250;">${state.plays.length} total play${state.plays.length===1?'':'s'} across ${state.games.length} game${state.games.length===1?'':'s'}.</p>
+      <p style="font-size:13px; color:#6b6250;">${state.plays.length} total play${state.plays.length===1?'':'s'} across ${state.games.length} game${state.games.length===1?'':'s'} (offense + defense combined).</p>
       <button class="btn gold wide" onclick="exportCSV()">Export All Plays (CSV)</button>
     </div>
     <div class="card danger-zone">
@@ -759,19 +1042,35 @@ function csvEscape(v){
   return s;
 }
 function exportCSV(){
-  const cols = ['Game','Date','Quarter','Clock','Down','Distance','Personnel','Front','Blitz','Shake','Coverage','FullCall','Yards','Tags','Success','Notes','Timestamp'];
+  const cols = ['Side','Game','Date','Quarter','Clock','Down','Distance',
+    'DEF_Personnel','DEF_Front','DEF_Blitz','DEF_Shake','DEF_Coverage',
+    'OFF_Formation','OFF_PersonnelPkg','OFF_Motion','OFF_PlayType','OFF_PlayCall','OFF_Modifiers','OFF_Fake',
+    'FullCall','Yards','Tags','Success','Notes','Timestamp'];
   const lines = [cols.join(',')];
   state.plays.forEach(p=>{
     const g = state.games.find(x=>x.id===p.gameId);
+    const isOff = p.side==='offense';
+    const offPlayCall = !isOff ? '' : (
+      p.playType==='run'
+        ? [p.runNumber, (p.runConcepts||[]).join(' ')].filter(Boolean).join(' ')
+        : slotsForMode(p.mode||'8').map(s=>(p.routes&&p.routes[s])||'').join('')
+    );
     const row = [
-      g? g.opponent : '', g? g.date : '',
+      p.side||'defense', g? g.opponent : '', g? g.date : '',
       p.quarter, p.clock, p.down, p.distance,
-      p.personnelId==='__custom'?p.personnelCustom:(personnelById(p.personnelId)?.label||''),
-      p.front==='__custom'?p.frontCustom:p.front,
-      p.blitz==='__custom'?p.blitzCustom:p.blitz,
-      p.shake?'Y':'N',
-      p.coverage==='__custom'?p.coverageCustom:p.coverage,
-      p.callString, p.yards, p.tags.join('; '), p.success?'Y':'N', p.notes,
+      isOff? '' : (p.personnelId==='__custom'?p.personnelCustom:(personnelById(p.personnelId)?.label||'')),
+      isOff? '' : (p.front==='__custom'?p.frontCustom:p.front),
+      isOff? '' : (p.blitz==='__custom'?p.blitzCustom:p.blitz),
+      isOff? '' : (p.shake?'Y':'N'),
+      isOff? '' : (p.coverage==='__custom'?p.coverageCustom:p.coverage),
+      !isOff? '' : (p.formation==='__custom'?p.formationCustom:p.formation),
+      !isOff? '' : (p.personnelPackage||''),
+      !isOff? '' : (p.motion==='__custom'?p.motionCustom:p.motion),
+      !isOff? '' : (p.playType||''),
+      offPlayCall,
+      !isOff? '' : (p.modifiers||[]).concat(p.modifiersCustom?[p.modifiersCustom]:[]).join(' '),
+      !isOff? '' : (p.fake? ('Fake '+(p.fakeText||'')) : ''),
+      p.callString, p.yards, (p.tags||[]).join('; '), p.success?'Y':'N', p.notes,
       new Date(p.ts).toISOString(),
     ];
     lines.push(row.map(csvEscape).join(','));
@@ -780,7 +1079,7 @@ function exportCSV(){
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'ccs-defense-plays-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.download = 'ccs-football-plays-'+new Date().toISOString().slice(0,10)+'.csv';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -796,6 +1095,11 @@ function wipeAll(){
 /* ===================== UTIL ===================== */
 function escapeHtml(s){
   return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function jsAttr(value){
+  // HTML-entity-encode a JSON-stringified value so it's safe inside an HTML
+  // attribute regardless of quote characters in the data (e.g. "Wendy's").
+  return escapeHtml(JSON.stringify(value));
 }
 
 /* ===================== INIT ===================== */
