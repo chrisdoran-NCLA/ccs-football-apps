@@ -1,6 +1,6 @@
 {
-  "name": "CCS Defense Tracker",
-  "short_name": "CCS Defense",
+  "name": "CCS Football Tracker",
+  "short_name": "CCS Football",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#101b30",
