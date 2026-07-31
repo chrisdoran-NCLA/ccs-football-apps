@@ -388,7 +388,7 @@ function renderLog(){
     <div class="card">
       <h2>2 · Front / DL Call</h2>
       <div class="chipgrid">
-        ${frontOptions.map(f=>`<button class="btn small ${b.front===f?'selected':''}" onclick="setFront(${JSON.stringify(f)})">${f}</button>`).join('')}
+        ${frontOptions.map(f=>`<button class="btn small ${b.front===f?'selected':''}" onclick='setFront(${JSON.stringify(f)})'>${f}</button>`).join('')}
         <button class="btn small ${b.front==='__custom'?'selected':''}" onclick="setFront('__custom')">Other…</button>
       </div>
       ${b.front==='__custom' ? `<input style="margin-top:8px;" type="text" placeholder="Custom front/call" value="${escapeHtml(b.frontCustom)}" oninput="state.builder.frontCustom=this.value; saveState(); renderPreviewOnly();">` : ''}
@@ -397,7 +397,7 @@ function renderLog(){
     <div class="card">
       <h2>3 · Blitz</h2>
       <div class="chipgrid">
-        ${blitzOptions.map(bl=>`<button class="btn small ${b.blitz===bl?'selected':''}" onclick="setBlitz(${JSON.stringify(bl)})">${bl}</button>`).join('')}
+        ${blitzOptions.map(bl=>`<button class="btn small ${b.blitz===bl?'selected':''}" onclick='setBlitz(${JSON.stringify(bl)})'>${bl}</button>`).join('')}
         <button class="btn small ${b.blitz==='__custom'?'selected':''}" onclick="setBlitz('__custom')">Other…</button>
       </div>
       ${b.blitz==='__custom' ? `<input style="margin-top:8px;" type="text" placeholder="Custom blitz" value="${escapeHtml(b.blitzCustom)}" oninput="state.builder.blitzCustom=this.value; saveState(); renderPreviewOnly();">` : ''}
@@ -410,7 +410,7 @@ function renderLog(){
         <div style="margin-bottom:8px;">
           <div style="font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:#8a8271; margin-bottom:5px;">${grp.label}</div>
           <div class="chipgrid">
-            ${grp.items.map(c=>`<button class="btn small ${b.coverage===c?'selected':''}" onclick="setCoverage(${JSON.stringify(c)})">${c}</button>`).join('')}
+            ${grp.items.map(c=>`<button class="btn small ${b.coverage===c?'selected':''}" onclick='setCoverage(${JSON.stringify(c)})'>${c}</button>`).join('')}
           </div>
         </div>
       `).join('')}
