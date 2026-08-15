@@ -660,8 +660,7 @@ function canSave(b){
   }
   const hasPersonnel = b.personnelId==='__custom' ? !!b.personnelCustom.trim() : !!b.personnelId;
   const hasFront = b.front==='__custom' ? !!b.frontCustom.trim() : !!b.front;
-  const hasCoverage = b.coverage==='__custom' ? !!b.coverageCustom.trim() : !!b.coverage;
-  return hasPersonnel && hasFront && hasCoverage;
+  return hasPersonnel && hasFront;
 }
 
 function ordinal(n){ return n===1?'1st':n===2?'2nd':n===3?'3rd':'4th'; }
@@ -1021,6 +1020,11 @@ function deleteGame(id){
 function renderData(){
   mainEl.innerHTML = `
     <div class="card">
+      <h2>App Updates</h2>
+      <p style="font-size:13px; color:#6b6250;">The app checks for updates automatically whenever you open it with a connection. Use this if you know I've pushed a fix and want it right now.</p>
+      <button class="btn wide" onclick="checkForUpdates()">Check for Updates</button>
+    </div>
+    <div class="card">
       <h2>Backup Reminder</h2>
       <div class="backup-note">Data lives only on this device's browser storage. Export a CSV after every game and save it to Files / iCloud / email — don't rely on the app alone for long-term storage.</div>
     </div>
@@ -1091,6 +1095,20 @@ function wipeAll(){
   state = defaultState();
   saveState(); render();
 }
+function checkForUpdates(){
+  if(!('serviceWorker' in navigator)){ showFlash('Not supported on this browser'); return; }
+  navigator.serviceWorker.getRegistration().then((reg)=>{
+    if(!reg){ showFlash('No service worker registered yet'); return; }
+    showFlash('Checking…');
+    reg.update().then(()=>{
+      // If an update was found and takes over, controllerchange fires and reloads automatically.
+      // If nothing changed, let the coach know so they're not left guessing.
+      setTimeout(()=>{
+        if(!document.hidden) showFlash('Up to date (or update installing…)');
+      }, 1500);
+    }).catch(()=>showFlash('Could not check — are you online?'));
+  });
+}
 
 /* ===================== UTIL ===================== */
 function escapeHtml(s){
@@ -1108,7 +1126,18 @@ if(window.self !== window.top){
 }
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('service-worker.js').catch(e=>console.error('SW register failed', e));
+    navigator.serviceWorker.register('service-worker.js').then((reg)=>{
+      reg.update().catch(()=>{});
+    }).catch(e=>console.error('SW register failed', e));
+
+    // When a new version takes over, reload once automatically so the update
+    // actually shows up, instead of silently sitting there uninstalled.
+    let alreadyRefreshed = false;
+    navigator.serviceWorker.addEventListener('controllerchange', ()=>{
+      if(alreadyRefreshed) return;
+      alreadyRefreshed = true;
+      window.location.reload();
+    });
   });
 }
 render();
