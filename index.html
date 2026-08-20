@@ -211,6 +211,21 @@ const OFF_RESULT_TAGS = ['Sack Taken','TFL Taken','INT Thrown','Fumble Lost','TD
 
 const DISTANCE_PRESETS = [1,2,3,5,7,10,15,20];
 
+const DEFAULT_CALL_SHEET = [
+  {number:'1', text:'Quads Z 2 Slant Motion Bbl923B'},
+  {number:'2', text:'Quads Rt 1111B'},
+  {number:'3', text:'Quads Z 9119B'},
+  {number:'4', text:'Twins Left 37 Funky'},
+  {number:'5', text:'Quads Z 2233B'},
+  {number:'6', text:'Pro Right 33'},
+  {number:'7', text:'Quads Z 8117B'},
+  {number:'8', text:'Trips Left X Bbl'},
+  {number:'9', text:'Twins Right 26 Funky'},
+  {number:'10', text:'Quads Left 37 Jet'},
+  {number:'11', text:'Quads Z American (1776B)'},
+  {number:'12', text:'Quads Z 2 crack motion 17 option'},
+];
+
 function slotsForMode(mode){ return mode==='11' ? ['X','Y','2','3','Z'] : ['X','Y','2','3']; }
 function currentReceiverSlots(){ return slotsForMode(state.mode); }
 
@@ -224,6 +239,7 @@ function defaultState(){
     games: [],
     activeGameId: null,
     plays: [],
+    callSheet: [],
     builder: emptyBuilder(),
   };
 }
@@ -237,6 +253,8 @@ function emptyBuilder(){
     blitz:'None', blitzCustom:'', shake:false,
     coverage:null, coverageCustom:'',
     // offense fields
+    offenseMode:'sheet', // 'sheet' (quick number entry, default) | 'builder' (full cascading builder)
+    sheetNumber:'', sheetCallOverride:'',
     formation:null, formationCustom:'',
     personnelPackage:'Standard',
     motion:'None', motionCustom:'',
@@ -254,12 +272,20 @@ let state = loadState();
 function loadState(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return defaultState();
+    if(!raw){
+      const fresh = defaultState();
+      fresh.callSheet = DEFAULT_CALL_SHEET.map(e=>({id:uid(), number:e.number, text:e.text}));
+      return fresh;
+    }
     const parsed = JSON.parse(raw);
     const base = defaultState();
     const merged = Object.assign(base, parsed, {builder: Object.assign(emptyBuilder(), parsed.builder||{})});
     // migrate plays saved before offense/defense side existed
     merged.plays = (merged.plays||[]).map(p=> p.side ? p : Object.assign({}, p, {side:'defense'}));
+    // seed a starter call sheet the first time this feature is loaded on a device
+    if(!merged.callSheet || merged.callSheet.length===0){
+      merged.callSheet = DEFAULT_CALL_SHEET.map(e=>({id:uid(), number:e.number, text:e.text}));
+    }
     return merged;
   }catch(e){
     console.error('Failed to load state, starting fresh.', e);
@@ -325,6 +351,10 @@ function buildDefenseCallString(b){
   return str || '(building call…)';
 }
 function buildOffenseCallString(b){
+  if(b.offenseMode==='sheet'){
+    const txt = (b.sheetCallOverride||'').trim();
+    return txt || '(pick a number…)';
+  }
   const parts = [];
   const formationLabel = b.formation==='__custom' ? b.formationCustom : b.formation;
   if(formationLabel) parts.push(formationLabel);
@@ -531,6 +561,59 @@ function defenseBuilderHtml(b){
 
 /* ---- Offense builder ---- */
 function offenseBuilderHtml(b){
+  const modeToggle = `
+    <div class="card">
+      <h2>Entry Method</h2>
+      <div class="chipgrid">
+        <button class="btn ${b.offenseMode==='sheet'?'selected':''}" onclick="setOffenseMode('sheet')">Call Sheet #</button>
+        <button class="btn ${b.offenseMode==='builder'?'selected':''}" onclick="setOffenseMode('builder')">Full Builder</button>
+      </div>
+    </div>
+  `;
+  return modeToggle + (b.offenseMode==='sheet' ? callSheetPickerHtml(b) : offenseFullBuilderHtml(b));
+}
+
+function callSheetPickerHtml(b){
+  const editing = !!window.__editCallSheet;
+  const sorted = state.callSheet.slice().sort((a,c)=>(parseFloat(a.number)||0)-(parseFloat(c.number)||0));
+  return `
+    <div class="card">
+      <h2>Pick a Number</h2>
+      ${sorted.length===0 ? `<div style="font-size:13px; color:#6b6250; margin-bottom:8px;">No call sheet numbers yet — tap "Edit Call Sheet" to add some.</div>` : `
+      <div class="chipgrid">
+        ${sorted.map(e=>`<button class="btn small ${b.sheetNumber===e.number?'selected':''}" onclick="setSheetNumber(${jsAttr(e.number)})">${escapeHtml(e.number)}</button>`).join('')}
+      </div>
+      `}
+      <button class="btn ghost" style="margin-top:8px;" onclick="toggleCallSheetEditor()">${editing?'Done Editing':'Edit Call Sheet'}</button>
+      ${editing ? callSheetEditorHtml() : ''}
+    </div>
+    ${b.sheetNumber ? `
+    <div class="card">
+      <h2>Resolved Call — #${escapeHtml(b.sheetNumber)}</h2>
+      <input type="text" value="${escapeHtml(b.sheetCallOverride)}" oninput="state.builder.sheetCallOverride=this.value; saveState(); renderPreviewOnly();">
+      <div style="font-size:12px; color:#6b6250; margin-top:6px;">Pre-filled from your call sheet — edit here if the QB audibled to something else.</div>
+    </div>
+    ` : ''}
+  `;
+}
+
+function callSheetEditorHtml(){
+  const sorted = state.callSheet.slice().sort((a,c)=>(parseFloat(a.number)||0)-(parseFloat(c.number)||0));
+  return `
+    <div style="margin-top:10px; border-top:1px solid var(--line); padding-top:10px;">
+      ${sorted.map(e=>`
+        <div class="row" style="margin-bottom:6px; align-items:center; flex-wrap:nowrap;">
+          <input type="text" style="width:54px; flex:0 0 auto;" value="${escapeHtml(e.number)}" oninput="updateCallSheetNumber(${jsAttr(e.id)}, this.value)">
+          <input type="text" style="flex:1;" value="${escapeHtml(e.text)}" placeholder="Play text" oninput="updateCallSheetText(${jsAttr(e.id)}, this.value)">
+          <button class="btn small danger" onclick="deleteCallSheetRow(${jsAttr(e.id)})">✕</button>
+        </div>
+      `).join('')}
+      <button class="btn small" style="margin-top:6px;" onclick="addCallSheetRow()">+ Add Number</button>
+    </div>
+  `;
+}
+
+function offenseFullBuilderHtml(b){
   return `
     <div class="card">
       <h2>1 · Formation</h2>
@@ -653,6 +736,9 @@ function saveBarHtml(b){
 
 function canSave(b){
   if(b.side==='offense'){
+    if(b.offenseMode==='sheet'){
+      return !!b.sheetNumber && !!(b.sheetCallOverride && b.sheetCallOverride.trim());
+    }
     const hasFormation = b.formation==='__custom' ? !!b.formationCustom.trim() : !!b.formation;
     if(!hasFormation) return false;
     if(b.playType==='run') return !!(b.runNumber && b.runNumber.trim());
@@ -686,7 +772,7 @@ function toggleTag(t){
   saveState(); render();
 }
 function resetBuilder(){
-  const keep = {side:state.builder.side, down:state.builder.down, distance:10, quarter:state.builder.quarter, clock:state.builder.clock};
+  const keep = {side:state.builder.side, offenseMode:state.builder.offenseMode, down:state.builder.down, distance:10, quarter:state.builder.quarter, clock:state.builder.clock};
   state.builder = Object.assign(emptyBuilder(), keep);
   saveState(); render();
 }
@@ -728,20 +814,56 @@ function toggleModifier(m){
 }
 function setFake(v){ state.builder.fake=v; saveState(); render(); }
 
+function setOffenseMode(m){ state.builder.offenseMode=m; saveState(); render(); }
+function setSheetNumber(n){
+  state.builder.sheetNumber = n;
+  const entry = state.callSheet.find(e=>e.number===n);
+  state.builder.sheetCallOverride = entry ? entry.text : '';
+  saveState(); render();
+}
+function toggleCallSheetEditor(){ window.__editCallSheet = !window.__editCallSheet; render(); }
+function addCallSheetRow(){
+  const nums = state.callSheet.map(e=>parseFloat(e.number)||0);
+  const next = (nums.length? Math.max(...nums):0)+1;
+  state.callSheet.push({id:uid(), number:String(next), text:''});
+  saveState(); render();
+}
+function updateCallSheetNumber(id, val){
+  const e = state.callSheet.find(x=>x.id===id);
+  if(e) e.number = val;
+  saveState();
+}
+function updateCallSheetText(id, val){
+  const e = state.callSheet.find(x=>x.id===id);
+  if(e) e.text = val;
+  saveState();
+}
+function deleteCallSheetRow(id){
+  state.callSheet = state.callSheet.filter(x=>x.id!==id);
+  saveState(); render();
+}
+
 function repeatLastCall(){
   const last = state.plays.filter(p=>p.gameId===state.activeGameId).slice(-1)[0];
   if(!last){ showFlash('No previous play to repeat'); return; }
   const common = {down:state.builder.down, distance:state.builder.distance, quarter:state.builder.quarter, clock:state.builder.clock, side:last.side};
   if(last.side==='offense'){
-    state.builder = Object.assign(emptyBuilder(), common, {
-      formation:last.formation, formationCustom:last.formationCustom||'',
-      personnelPackage:last.personnelPackage||'Standard',
-      motion:last.motion, motionCustom:last.motionCustom||'',
-      playType:last.playType||'run', runNumber:last.runNumber||'', runConcepts:(last.runConcepts||[]).slice(),
-      routes:Object.assign({X:'',Y:'','2':'','3':'','Z':''}, last.routes||{}),
-      modifiers:(last.modifiers||[]).slice(), modifiersCustom:last.modifiersCustom||'',
-      fake:last.fake||false, fakeText:last.fakeText||'',
-    });
+    if((last.offenseMode||'sheet')==='sheet'){
+      state.builder = Object.assign(emptyBuilder(), common, {
+        offenseMode:'sheet', sheetNumber:last.playNumber||'', sheetCallOverride:last.callString||'',
+      });
+    } else {
+      state.builder = Object.assign(emptyBuilder(), common, {
+        offenseMode:'builder',
+        formation:last.formation, formationCustom:last.formationCustom||'',
+        personnelPackage:last.personnelPackage||'Standard',
+        motion:last.motion, motionCustom:last.motionCustom||'',
+        playType:last.playType||'run', runNumber:last.runNumber||'', runConcepts:(last.runConcepts||[]).slice(),
+        routes:Object.assign({X:'',Y:'','2':'','3':'','Z':''}, last.routes||{}),
+        modifiers:(last.modifiers||[]).slice(), modifiersCustom:last.modifiersCustom||'',
+        fake:last.fake||false, fakeText:last.fakeText||'',
+      });
+    }
   } else {
     state.builder = Object.assign(emptyBuilder(), common, {
       personnelId:last.personnelId, personnelCustom:last.personnelCustom||'',
@@ -759,6 +881,7 @@ function savePlay(){
   if(!canSave(b)) return;
   const callString = buildCallString(b);
   const success = computeSuccess(b);
+  const isOffenseFullBuilder = b.side==='offense' && b.offenseMode==='builder';
   const play = {
     id: uid(), gameId: state.activeGameId, ts: Date.now(), side: b.side,
     quarter: b.quarter, clock: b.clock, down: b.down, distance: b.distance,
@@ -766,13 +889,21 @@ function savePlay(){
     front: b.front, frontCustom: b.frontCustom,
     blitz: b.blitz, blitzCustom: b.blitzCustom, shake: b.shake,
     coverage: b.coverage, coverageCustom: b.coverageCustom,
-    formation: b.formation, formationCustom: b.formationCustom,
-    personnelPackage: b.personnelPackage,
-    motion: b.motion, motionCustom: b.motionCustom,
-    playType: b.playType, runNumber: b.runNumber, runConcepts: (b.runConcepts||[]).slice(),
-    routes: Object.assign({}, b.routes),
-    modifiers: (b.modifiers||[]).slice(), modifiersCustom: b.modifiersCustom,
-    fake: b.fake, fakeText: b.fakeText,
+    offenseMode: b.side==='offense' ? b.offenseMode : null,
+    playNumber: (b.side==='offense' && b.offenseMode==='sheet') ? b.sheetNumber : '',
+    formation: isOffenseFullBuilder ? b.formation : null,
+    formationCustom: isOffenseFullBuilder ? b.formationCustom : '',
+    personnelPackage: isOffenseFullBuilder ? b.personnelPackage : 'Standard',
+    motion: isOffenseFullBuilder ? b.motion : null,
+    motionCustom: isOffenseFullBuilder ? b.motionCustom : '',
+    playType: isOffenseFullBuilder ? b.playType : null,
+    runNumber: isOffenseFullBuilder ? b.runNumber : '',
+    runConcepts: isOffenseFullBuilder ? (b.runConcepts||[]).slice() : [],
+    routes: isOffenseFullBuilder ? Object.assign({}, b.routes) : {},
+    modifiers: isOffenseFullBuilder ? (b.modifiers||[]).slice() : [],
+    modifiersCustom: isOffenseFullBuilder ? b.modifiersCustom : '',
+    fake: isOffenseFullBuilder ? b.fake : false,
+    fakeText: isOffenseFullBuilder ? b.fakeText : '',
     callString, yards: b.yards, tags: b.tags.slice(), notes: b.notes, success,
     mode: state.mode,
   };
@@ -813,7 +944,7 @@ function renderList(){
         ${plays.map(p=>`
           <div class="play-row">
             <div>
-              <div class="call"><span class="side-badge ${p.side}">${p.side==='offense'?'OFF':'DEF'}</span>${escapeHtml(p.callString)}</div>
+              <div class="call"><span class="side-badge ${p.side}">${p.side==='offense'?'OFF':'DEF'}</span>${p.playNumber?('#'+escapeHtml(p.playNumber)+' &middot; '):''}${escapeHtml(p.callString)}</div>
               <div class="meta">${ordinal(p.down)} &amp; ${p.distance} · Q${p.quarter}${p.clock? ' · '+escapeHtml(p.clock):''}${p.tags.length? ' · '+p.tags.join(', '):''}</div>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
@@ -882,6 +1013,8 @@ function trendsSectionHtml(title, plays, side){
     groups += groupCard('By Formation', groupBy(plays, p=>p.formation==='__custom'?p.formationCustom:p.formation));
     groups += groupCard('By Play Type', groupBy(plays, p=>p.playType==='run'?'Run':'Pass'));
     groups += groupCard('By Motion', groupBy(plays, p=>(p.motion==='__custom'?p.motionCustom:p.motion)||'None'));
+    const numbered = plays.filter(p=>p.playNumber);
+    if(numbered.length) groups += groupCard('By Play Number', groupBy(numbered, p=>'#'+p.playNumber));
   }
   return `
     <div class="card">
@@ -1048,13 +1181,14 @@ function csvEscape(v){
 function exportCSV(){
   const cols = ['Side','Game','Date','Quarter','Clock','Down','Distance',
     'DEF_Personnel','DEF_Front','DEF_Blitz','DEF_Shake','DEF_Coverage',
-    'OFF_Formation','OFF_PersonnelPkg','OFF_Motion','OFF_PlayType','OFF_PlayCall','OFF_Modifiers','OFF_Fake',
+    'OFF_EntryMode','OFF_PlayNumber','OFF_Formation','OFF_PersonnelPkg','OFF_Motion','OFF_PlayType','OFF_PlayCall','OFF_Modifiers','OFF_Fake',
     'FullCall','Yards','Tags','Success','Notes','Timestamp'];
   const lines = [cols.join(',')];
   state.plays.forEach(p=>{
     const g = state.games.find(x=>x.id===p.gameId);
     const isOff = p.side==='offense';
-    const offPlayCall = !isOff ? '' : (
+    const isOffBuilder = isOff && p.offenseMode==='builder';
+    const offPlayCall = !isOffBuilder ? '' : (
       p.playType==='run'
         ? [p.runNumber, (p.runConcepts||[]).join(' ')].filter(Boolean).join(' ')
         : slotsForMode(p.mode||'8').map(s=>(p.routes&&p.routes[s])||'').join('')
@@ -1067,13 +1201,15 @@ function exportCSV(){
       isOff? '' : (p.blitz==='__custom'?p.blitzCustom:p.blitz),
       isOff? '' : (p.shake?'Y':'N'),
       isOff? '' : (p.coverage==='__custom'?p.coverageCustom:p.coverage),
-      !isOff? '' : (p.formation==='__custom'?p.formationCustom:p.formation),
-      !isOff? '' : (p.personnelPackage||''),
-      !isOff? '' : (p.motion==='__custom'?p.motionCustom:p.motion),
-      !isOff? '' : (p.playType||''),
+      !isOff? '' : (p.offenseMode||'sheet'),
+      !isOff? '' : (p.playNumber||''),
+      !isOffBuilder? '' : (p.formation==='__custom'?p.formationCustom:p.formation),
+      !isOffBuilder? '' : (p.personnelPackage||''),
+      !isOffBuilder? '' : (p.motion==='__custom'?p.motionCustom:p.motion),
+      !isOffBuilder? '' : (p.playType||''),
       offPlayCall,
-      !isOff? '' : (p.modifiers||[]).concat(p.modifiersCustom?[p.modifiersCustom]:[]).join(' '),
-      !isOff? '' : (p.fake? ('Fake '+(p.fakeText||'')) : ''),
+      !isOffBuilder? '' : (p.modifiers||[]).concat(p.modifiersCustom?[p.modifiersCustom]:[]).join(' '),
+      !isOffBuilder? '' : (p.fake? ('Fake '+(p.fakeText||'')) : ''),
       p.callString, p.yards, (p.tags||[]).join('; '), p.success?'Y':'N', p.notes,
       new Date(p.ts).toISOString(),
     ];
